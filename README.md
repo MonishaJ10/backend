@@ -421,6 +421,33 @@ Entity class	Replaced IDENTITY with SEQUENCE and added @SequenceGenerator
 Oracle SQL	Manually create sequence dashboard_seq
 
 
+application.properties
+server.port=8080
+
+spring.datasource.url=jdbc:oracle:thin:@//eurvlid34782.xmp.net.intra:1521/NEXTGEN1
+
+spring.datasource.username=NEXTGEN1
+
+spring.datasource.password=X<A67w0>BlPzw*RiqEMSwJHqU
+
+spring.datasource.driver-class-name-oracle.jdbc.OracleDriver
+
+spring.jpa.database-platform=org.hibernate.dialect.OracleDialect
+
+spring.jpa.properties.hibernate.boot.allow_jdbc_metadata_access=false
+
+spring.jpa.properties.hibernate.format_sql=true
+
+logging.level.org.hibernate.SQL=DEBUG
+
+logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
+
+spring.jpa.hibernate.ddl-auto=none
+
+
+
+spring.jpa.show-sql=true
+
 
 
 
