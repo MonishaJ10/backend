@@ -213,55 +213,9 @@ spring.datasource.username=root
 spring.datasource.password=2004
 spring.datasource.driver-class-name=com.mysql.cj.jdbc.Driver
 spring.jpa.show-sql: true
-_____________________________________________________________________________________________________________
-To modify the existing Spring Boot application to work with Oracle instead of MySQL, you'll need to update your application.properties and make a few small adjustments, particularly related to the database connection and Hibernate dialect configuration.
+dialect.
 
-1. Update application.properties
-You will change the database connection properties to point to Oracle instead of MySQL. Oracle uses a different JDBC URL format and requires a specific driver and dialect.
 
-Updated application.properties:
-
-spring.application.name=v1
-
-# Hibernate Dialect for Oracle
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.Oracle12cDialect
-
-# JPA settings
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
-# DataSource configuration for Oracle
-spring.datasource.url=jdbc:oracle:thin:@//localhost:1521/xe   # Oracle URL (replace 'xe' with your Oracle SID or service name)
-spring.datasource.username=your_oracle_username
-spring.datasource.password=your_oracle_password
-spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
-
-Make sure to replace your_oracle_username, your_oracle_password, and localhost:1521/xe with your actual Oracle DB username, password, and connection URL.
-
-Explanation of the Oracle JDBC URL:
-jdbc:oracle:thin:@//localhost:1521/xe: This is the typical JDBC connection string for Oracle.
-
-Replace localhost with the hostname or IP address of your Oracle DB.
-
-Replace 1521 with the port number your Oracle DB is using (default is 1521).
-
-Replace xe with the Oracle SID or Service Name you are using. For example, if your Oracle SID is orcl, you would use @//localhost:1521/orcl.
-
-2. Update Hibernate Dialect
-In Oracle, we use the Oracle12cDialect for Hibernate to communicate with the Oracle database properly. This is set in spring.jpa.properties.hibernate.dialect.
-
-3. Oracle Driver Dependency
-If you haven't already included the Oracle JDBC driver in your pom.xml, you'll need to add it.
-
-Maven Dependency for Oracle JDBC Driver:
-If you are using Maven, add the following dependency for Oracle JDBC:
-
-<dependency>
-    <groupId>com.oracle.database.jdbc</groupId>
-    <artifactId>ojdbc8</artifactId>
-    <version>19.8.0.0</version> <!-- Ensure to use the correct version -->
-</dependency>
-Make sure the version matches the version of your Oracle database and JDBC driver.
 
 4. Entity Considerations
 The entities themselves (like Dashboard and DashboardDTO) typically don’t require any changes because JPA will handle the SQL generation automatically, but there are some points to note when migrating from MySQL to Oracle:
@@ -274,22 +228,11 @@ Auto-increment fields: Oracle uses sequences for auto-increment fields, while My
 private Long id;
 Ensure you create a sequence in your Oracle DB if you need to use a custom sequence.
 
-sql
-Copy
-Edit
+
 CREATE SEQUENCE dashboard_seq START WITH 1 INCREMENT BY 1;
 Other than this, the model structure should remain the same as long as you use JPA annotations.
 
-5. Oracle SQL Syntax Adjustments
-Oracle SQL has some syntax differences from MySQL. For example, in Oracle:
 
-VARCHAR has a maximum length of 4000 characters.
-
-The TEXT type in MySQL would be represented by CLOB in Oracle.
-
-Date handling in Oracle is different, but JPA will automatically map LocalDateTime to Oracle's TIMESTAMP type.
-
-Your entity class Dashboard with LocalDateTime fields (like createdDate and modifiedDate) will work fine, as JPA will map it to Oracle's TIMESTAMP.
 
 Final Code Changes Recap:
 application.properties for Oracle DB:
@@ -324,39 +267,6 @@ CREATE SEQUENCE dashboard_seq START WITH 1 INCREMENT BY 1;
 Conclusion
 This configuration should enable your Spring Boot application to work with an Oracle database while retaining the same functionality as the original MySQL-based application. The majority of changes are related to the database connection and dialect configuration in application.properties. The actual code for entities, services, and controllers should not require significant changes.
 
-_________________________________________________________________________________________________________________________________________________________________________________
-
-application.properties (Updated for Oracle)
-properties
-Copy
-Edit
-spring.application.name=v1
-
-# Hibernate Dialect for Oracle
-spring.jpa.properties.hibernate.dialect=org.hibernate.dialect.Oracle12cDialect
-
-# JPA settings
-spring.jpa.hibernate.ddl-auto=update
-spring.jpa.show-sql=true
-
-# DataSource configuration for Oracle
-spring.datasource.url=jdbc:oracle:thin:@//localhost:1521/xe
-spring.datasource.username=your_oracle_username
-spring.datasource.password=your_oracle_password
-spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
-🔁 Replace your_oracle_username, your_oracle_password, and localhost:1521/xe with actual values.
-
-✅ pom.xml (Add Oracle JDBC dependency)
-Add this inside the <dependencies> section:
-
-xml
-Copy
-Edit
-<dependency>
-    <groupId>com.oracle.database.jdbc</groupId>
-    <artifactId>ojdbc8</artifactId>
-    <version>19.8.0.0</version>
-</dependency>
 ✅ Dashboard.java (Updated for Oracle SEQUENCE)
 java
 Copy
