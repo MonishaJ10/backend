@@ -486,3 +486,173 @@ spring.jpa.hibernate.ddl-auto=update
 
 spring.jpa.show-sql=true
 
+
+Dashboard.java(model)
+package com.example.recon_connect.model;
+
+import jakarta.persistence.*;
+
+import lombok.*;
+
+import java.time. LocalDateTime;
+
+@Entity
+
+@Data
+
+@NoArgsConstructor
+
+@AllArgsConstructor
+
+@Builder
+
+public class Dashboard {
+
+@Id
+
+@GeneratedValue(strategy = GenerationType.SEQUENCE, generator = "dashboard_seq")
+
+@SequenceGenerator(name = "dashboard_seq", sequenceName = "dashboard_seq", allocationSize= 1)
+
+private Long id;
+
+private String name;
+
+private String description;
+
+private String createdBy;
+
+private LocalDateTime createdDate;
+
+private String modifiedBy;
+
+private LocalDateTime modifiedDate;
+
+private boolean isPublic;
+
+private String model;
+
+private String groupBy;
+
+private String aggregation;
+
+private String aggregationField;
+
+}
+
+DashboardRepository.java
+package com.example.recon_connect.repository;
+
+import com.example.recon_connect.model.Dashboard;
+
+import org.springframework.data.jpa.repository. JpaRepository;
+
+
+public interface DashboardRepository extends JpaRepository<Dashboard, Long> {
+
+}
+
+DashboardService.java
+package com.example.recon_connect.service;
+
+import com.example.recon_connect.dto.DashboardDTO;
+
+import com.example.recon_connect.model.Dashboard;
+
+import com.example.recon_connect.repository. DashboardRepository;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.stereotype.Service;
+
+import java.time.LocalDateTime;
+
+import java.util.List;
+
+import java.util.Optional;
+
+
+
+import java.util.stream.Collectors;
+
+@Service
+
+public class DashboardService {
+
+@Autowired
+
+private DashboardRepository dashboardRepository;
+
+public Dashboard saveDashboard (Dashboard dashboard) {
+
+dashboard.setCreated Date (LocalDateTime.now());
+
+dashboard.setModifiedDate (LocalDateTime.now());
+
+return dashboardRepository.save(dashboard);
+
+}
+
+public List<DashboardDTO> getAllDashboards(){
+
+return dashboardRepository.findAll()
+
+.stream()
+
+.map(DashboardDTO::new)
+
+.collect(Collectors.toList());
+
+
+}
+
+public List<Dashboard> getAllFullDashboards(){
+
+return dashboardRepository.findAll();
+
+}
+public Optional<Dashboard> updateDashboard (Long id, Dashboard updated) {
+
+return dashboardRepository.findById(id).map(existing -> {
+
+existing.setName(updated.getName());
+
+existing.setDescription (updated.getDescription());
+
+existing.setPublic (updated.isPublic());
+
+existing.setModel(updated.getModel());
+
+existing.setGroupBy(updated.getGroupBy());
+
+existing.setAggregation (updated.getAggregation());
+
+existing.setAggregationField(updated.getAggregationField());
+
+existing.setModifiedBy(updated.getModifiedBy());
+
+existing.setModifiedDate(LocalDateTime.now());
+
+return dashboardRepository.save(existing);
+
+});
+
+3
+
+}
+
+public boolean deleteDashboard (Long id) {
+
+if (dashboardRepository.existsById(id)){
+
+dashboardRepository.deleteById(id);
+
+return true;
+
+}
+
+return false;
+
+}
+
+}
