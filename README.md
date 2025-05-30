@@ -773,14 +773,27 @@ Upon returning to Manage Dashboard, it will fetch and display all dashboards in 
 Would you like me to provide a downloadable .zip with fixed Angular service and component code? Or do you want me to double-check your HTML too?
 
 
+_____________________
+package com.example.recon_connect.config;
 
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
-
-
-
-
-Tools
-
-
-
-ChatGPT can make mistakes. Check important info. See Cookie Preferenc
+@Configuration
+public class CorsConfig {
+    @Bean
+    public WebMvcConfigurer corsConfigurer() {
+        return new WebMvcConfigurer() {
+            @Override
+            public void addCorsMappings(CorsRegistry registry) {
+                registry.addMapping("/api/**")
+                        .allowedOrigins("http://localhost:4200") // your Angular app URL
+                        .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS")
+                        .allowedHeaders("*")
+                        .allowCredentials(true);
+            }
+        };
+    }
+}
