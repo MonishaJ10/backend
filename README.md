@@ -656,3 +656,131 @@ return false;
 }
 
 }
+
+-------_-------
+Required Changes (Frontend)
+✅ 1. Fix DashboardService (Angular)
+Replace in-memory array with HTTP calls.
+
+🔁 dashboard.service.ts
+ts
+Copy code
+import { Injectable } from '@angular/core';
+import { HttpClient } from '@angular/common/http';
+import { Dashboardd } from './dashboard.model';
+import { Observable } from 'rxjs';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class DashboardService {
+  private apiUrl = 'http://localhost:8083/api/dashboards';
+
+  constructor(private http: HttpClient) {}
+
+  getDashboards(): Observable<Dashboardd[]> {
+    return this.http.get<Dashboardd[]>(this.apiUrl);
+  }
+
+  addDashboard(dashboard: any): Observable<any> {
+    return this.http.post(this.apiUrl, dashboard);
+  }
+}
+✅ 2. Modify BlankDashboardComponent
+Replace in-memory call with service call.
+
+🔁 Inject and Use DashboardService in BlankDashboardComponent
+Update import and constructor:
+
+ts
+Copy code
+import { DashboardService } from '../dashboard.service';
+
+constructor(private router: Router, private dashboardService: DashboardService) {}
+🔁 Update submit() method:
+ts
+Copy code
+submit() {
+  const dashboard = {
+    name: this.formData.name,
+    description: this.formData.description,
+    public: this.formData.visibility === 'Public',
+    createdBy: 'User',  // Replace with real user info if available
+    createdDate: new Date().toISOString(),
+    modifiedBy: 'User',
+    modifiedDate: new Date().toISOString(),
+    model: this.model,
+    groupBy: this.groupBy,
+    aggregation: this.aggregation,
+    aggregationField: this.aggregationField
+  };
+
+  this.dashboardService.addDashboard(dashboard).subscribe({
+    next: () => {
+      alert('Dashboard submitted successfully!');
+      this.router.navigate(['/inventory/manage-dashboard']);
+    },
+    error: () => alert('Failed to save dashboard')
+  });
+}
+✅ 3. Update ManageDashboardComponent
+Fetch dashboards from backend and display in the table.
+
+🔁 Modify imports:
+ts
+Copy code
+import { DashboardService } from './dashboard.service';
+🔁 Inject service in constructor:
+ts
+Copy code
+constructor(private dashboardService: DashboardService) {}
+🔁 Add ngOnInit:
+ts
+Copy code
+ngOnInit() {
+  this.loadDashboards();
+}
+
+loadDashboards() {
+  this.dashboardService.getDashboards().subscribe({
+    next: (data) => this.tableData = data,
+    error: () => alert('Failed to load dashboards')
+  });
+}
+✅ 4. Register HttpClientModule
+In your app.config.ts, ensure this is added:
+
+ts
+Copy code
+import { provideHttpClient } from '@angular/common/http';
+
+export const appConfig: ApplicationConfig = {
+  providers: [
+    provideHttpClient(),
+    ...
+  ]
+};
+✅ Backend: No changes needed ✅
+You're already exposing the correct endpoints (POST /api/dashboards and GET /api/dashboards), and they return DashboardDTO which matches your frontend structure.
+
+🔚 Final Output
+Once these changes are made:
+
+Submitting the form in Blank Dashboard will send the data to the backend.
+
+Upon returning to Manage Dashboard, it will fetch and display all dashboards in the table.
+
+Would you like me to provide a downloadable .zip with fixed Angular service and component code? Or do you want me to double-check your HTML too?
+
+
+
+
+
+
+
+
+Tools
+
+
+
+ChatGPT can make mistakes. Check important info. See Cookie Preferenc
