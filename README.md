@@ -332,34 +332,157 @@ Oracle SQL	Manually create sequence dashboard_seq
 
 
 application.properties
-server.port=8080
 
-spring.datasource.url=jdbc:oracle:thin:@//eurvlid34782.xmp.net.intra:1521/NEXTGEN1
+________________________________________
+DashboardDTO.java
+package com.example.recon_connect.dto;
+
+import com.example.recon_connect.model.Dashboard;
+
+import java.time.LocalDateTime;
+
+import lombok.Data;
+
+@Data
+
+public class DashboardDTO {
+
+private String name;
+
+private String description;
+
+private String createdBy;
+
+private LocalDateTime createdDate;
+
+private String modifiedBy;
+
+private LocalDateTime modifiedDate;
+
+private boolean isPublic;
+
+public DashboardDTO (Dashboard d) {
+
+this.name = d.getName();
+
+this.description = d.getDescription();
+
+this.createdBy= d.getCreatedBy();
+
+this.createdDate = d.getCreatedDate();
+
+this.modifiedBy= d.getModifiedBy();
+
+this.modifiedDate = d.getModifiedDate();
+
+this.isPublic = d.isPublic();
+
+}
+
+}
+
+DashboardController.java
+package com.example.recon_connect.controller;
+
+import com.example.recon_connect.dto.DashboardDTO;
+
+import com.example.recon_connect.model.Dashboard;
+
+import com.example.recon_connect.service.DashboardService;
+
+import org.springframework.beans.factory.annotation.Autowired;
+
+import org.springframework.http.ResponseEntity;
+
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+import java.util.Optional;
+
+@RestController
+
+@RequestMapping("/api/dashboards")
+
+public class DashboardController {
+
+@Autowired
+
+private DashboardService dashboardService;
+
+@PostMapping
+
+public ResponseEntity<Dashboard> createDashboard (@RequestBody Dashboard dashboard) {
+
+return ResponseEntity.ok(dashboardService.saveDashboard(dashboard));
+
+}
+
+@GetMapping
+
+public ResponseEntity<List<DashboardDTO>> getAllDashboards() {
+
+return ResponseEntity.ok(dashboardService.getAllDashboards());
+
+}
+
+@GetMapping("/all")
+
+public ResponseEntity<List<Dashboard>> getAllFullDashboards() {
+
+return ResponseEntity.ok(dashboardService.getAllFullDashboards());
+
+}
+
+@PutMapping("/{id}")
+
+public ResponseEntity<Dashboard> updateDashboard (@PathVariable Long id, @RequestBody Dashboard dashboard) {
+
+Optional<Dashboard> updated = dashboardService.updateDashboard(id, dashboard);
+
+return updated.map(ResponseEntity::ok).orElse (ResponseEntity.notFound().build());
+
+}
+
+@DeleteMapping("/{id}")
+
+public ResponseEntity<Void> deleteDashboard(@PathVariable Long id) {
+
+boolean deleted = dashboardService.deleteDashboard(id);
+
+if(deleted) {
+
+return ResponseEntity.noContent().build();
+
+}
+
+else{
+
+I
+
+}
+
+return Response Entity.notFound().build();
+
+}
+
+
+
+}
+
+application.properties
+
+server.port=8083
+
+spring.datasource.url=jdbc:oracle:thin:@eurvlid34782.xmp.net.intra:1521/NEXTGEN1
 
 spring.datasource.username=NEXTGEN1
 
 spring.datasource.password=X<A67w0>BlPzw*RiqEMSwJHqU
 
-spring.datasource.driver-class-name-oracle.jdbc.OracleDriver
+spring.datasource.driver-class-name=oracle.jdbc.OracleDriver
 
-spring.jpa.database-platform=org.hibernate.dialect.OracleDialect
-
-spring.jpa.properties.hibernate.boot.allow_jdbc_metadata_access=false
-
-spring.jpa.properties.hibernate.format_sql=true
-
-logging.level.org.hibernate.SQL=DEBUG
-
-logging.level.org.hibernate.type.descriptor.sql.BasicBinder=TRACE
-
-spring.jpa.hibernate.ddl-auto=none
-
-
+spring.jpa.hibernate.ddl-auto=update
 
 spring.jpa.show-sql=true
-
-
-
-
-
 
